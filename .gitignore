@@ -1,0 +1,61 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.env
+
+# VSCode
+.vscode/
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Python virtual environments
+.venv/
+
+# Coverage reports
+coverage/
+*.cover
+*.coverage
+.coverage.*
+
+# Flask
+instance/
+.webassets-cache
+
+# Frontend build
+attendance/frontend/dist/
+attendance/frontend/node_modules/
+
+# Backend build
+backend/node_modules/
+backend/dist/
+
+# Misc
+*.swp
+*.swo
+*.bak
+*.tmp
+*.temp
+
+# Ignore git folder itself
+.git/

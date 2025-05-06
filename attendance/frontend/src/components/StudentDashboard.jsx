@@ -1,109 +1,72 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-function StudentDashboard() {
-  const [attendanceRecords, setAttendanceRecords] = useState([]);
-  const [attendanceSummary, setAttendanceSummary] = useState({}); // subject: percentage
-  const [weeklyReport, setWeeklyReport] = useState({}); // date: {present: count, absent: count}
+function StudentDashboard({ studentId }) {
+  const [attendanceSummary, setAttendanceSummary] = useState({});
+  const [results, setResults] = useState([]);
+  const [leaveStatus, setLeaveStatus] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
 
   useEffect(() => {
-    // Get logged-in user from localStorage
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user.id) {
-      console.error("User not logged in");
-      return;
+    fetchAttendanceSummary();
+    fetchResults();
+    fetchLeaveStatus();
+    fetchFeedbacks();
+  }, [studentId]);
+
+  const fetchAttendanceSummary = async () => {
+    try {
+      const res = await axios.get(`http://localhost:1516/api/attendance/student/${studentId}`);
+      setAttendanceSummary(res.data.summary);
+    } catch (error) {
+      console.error("Failed to fetch attendance summary", error);
     }
-    const studentId = user.id;
+  };
 
-    axios.get(`http://localhost:1516/api/attendance/student/${studentId}`)
-      .then(res => {
-        setAttendanceRecords(res.data.records);
-        setAttendanceSummary(res.data.summary);
-        generateWeeklyReport(res.data.records);
-      })
-      .catch(err => {
-        console.error("Failed to load attendance records:", err);
-      });
-  }, []);
+  const fetchResults = async () => {
+    try {
+      const res = await axios.get(`http://localhost:1516/api/student/results/${studentId}`);
+      setResults(res.data.results);
+    } catch (error) {
+      console.error("Failed to fetch results", error);
+    }
+  };
 
-  const generateWeeklyReport = (records) => {
-    // Generate a simple weekly report summary grouped by date
-    const report = {};
-    records.forEach(record => {
-      const date = record.date;
-      if (!report[date]) {
-        report[date] = { present: 0, absent: 0 };
-      }
-      if (record.present) {
-        report[date].present += 1;
-      } else {
-        report[date].absent += 1;
-      }
-    });
-    setWeeklyReport(report);
+  const fetchLeaveStatus = async () => {
+    // Implement API call to fetch leave status for student
+  };
+
+  const fetchFeedbacks = async () => {
+    // Implement API call to fetch feedbacks for student
   };
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Student Dashboard</h1>
 
-      <h2 className="text-xl font-semibold mb-2">Attendance Records</h2>
-      <table className="w-full border-collapse border border-gray-300 mb-6">
-        <thead>
-          <tr>
-            <th className="border border-gray-300 p-2">Subject</th>
-            <th className="border border-gray-300 p-2">Date</th>
-            <th className="border border-gray-300 p-2">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {attendanceRecords.map((record, index) => (
-            <tr key={index}>
-              <td className="border border-gray-300 p-2">{record.subject}</td>
-              <td className="border border-gray-300 p-2">{record.date}</td>
-              <td className="border border-gray-300 p-2">{record.present ? "Present" : "Absent"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h2 className="text-xl font-semibold mb-2">Attendance Summary (%)</h2>
-      <table className="w-full border-collapse border border-gray-300 mb-6">
-        <thead>
-          <tr>
-            <th className="border border-gray-300 p-2">Subject</th>
-            <th className="border border-gray-300 p-2">Attendance %</th>
-          </tr>
-        </thead>
-        <tbody>
+      <section className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">Attendance Summary</h2>
+        <ul>
           {Object.entries(attendanceSummary).map(([subject, percent]) => (
-            <tr key={subject}>
-              <td className="border border-gray-300 p-2">{subject}</td>
-              <td className="border border-gray-300 p-2">{percent.toFixed(2)}%</td>
-            </tr>
+            <li key={subject}>
+              {subject}: {percent.toFixed(2)}%
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+      </section>
 
-      <h2 className="text-xl font-semibold mb-2">Weekly Report</h2>
-      <table className="w-full border-collapse border border-gray-300">
-        <thead>
-          <tr>
-            <th className="border border-gray-300 p-2">Date</th>
-            <th className="border border-gray-300 p-2">Present</th>
-            <th className="border border-gray-300 p-2">Absent</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(weeklyReport).map(([date, counts]) => (
-            <tr key={date}>
-              <td className="border border-gray-300 p-2">{date}</td>
-              <td className="border border-gray-300 p-2">{counts.present}</td>
-              <td className="border border-gray-300 p-2">{counts.absent}</td>
-            </tr>
+      <section className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">Results</h2>
+        <ul>
+          {results.map((result, index) => (
+            <li key={index}>
+              {result.subject}: {result.marks} / {result.max_marks} (Exam Date: {result.exam_date})
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+      </section>
+
+      {/* Add UI for leave status and feedbacks */}
     </div>
   );
 }

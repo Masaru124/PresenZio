@@ -13,51 +13,53 @@ function TeacherDashboard() {
   useEffect(() => {
     if (section) {
       // Fetch students for the section
-      axios.get(`http://localhost:1516/api/attendance/students?section=${section}`)
-        .then(res => {
+      axios
+        .get(`http://localhost:8000/api/attendance/students?section=${section}`)
+        .then((res) => {
           setStudentList(res.data.students);
           // Initialize attendance state
           const initialAttendance = {};
-          res.data.students.forEach(student => {
+          res.data.students.forEach((student) => {
             initialAttendance[student.id] = false; // default absent
           });
           setAttendance(initialAttendance);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Failed to load students:", err);
         });
     }
   }, [section]);
 
   const toggleAttendance = (studentId) => {
-    setAttendance(prev => ({
+    setAttendance((prev) => ({
       ...prev,
-      [studentId]: !prev[studentId]
+      [studentId]: !prev[studentId],
     }));
   };
 
   const handleSaveAttendance = () => {
     // Prepare attendance data
-    const attendanceData = studentList.map(student => ({
+    const attendanceData = studentList.map((student) => ({
       studentId: student.id,
       present: attendance[student.id] || false,
     }));
 
     // Send attendance data to backend
-    axios.post("http://localhost:1516/api/attendance/save", {
-      subject,
-      date,
-      time,
-      section,
-      attendance: attendanceData,
-    })
-    .then(res => {
-      alert("Attendance saved successfully");
-    })
-    .catch(err => {
-      console.error("Failed to save attendance:", err);
-      alert("Failed to save attendance");
-    });
+    axios
+      .post("http://localhost:8000/api/attendance/save", {
+        subject,
+        date,
+        time,
+        section,
+        attendance: attendanceData,
+      })
+      .then((res) => {
+        alert("Attendance saved successfully");
+      })
+      .catch((err) => {
+        console.error("Failed to save attendance:", err);
+        alert("Failed to save attendance");
+      });
   };
 
   return (
@@ -69,7 +71,7 @@ function TeacherDashboard() {
         <input
           type="text"
           value={subject}
-          onChange={e => setSubject(e.target.value)}
+          onChange={(e) => setSubject(e.target.value)}
           className="border p-2 rounded w-full"
         />
       </div>
@@ -79,7 +81,7 @@ function TeacherDashboard() {
         <input
           type="date"
           value={date}
-          onChange={e => setDate(e.target.value)}
+          onChange={(e) => setDate(e.target.value)}
           className="border p-2 rounded w-full"
         />
       </div>
@@ -89,7 +91,7 @@ function TeacherDashboard() {
         <input
           type="time"
           value={time}
-          onChange={e => setTime(e.target.value)}
+          onChange={(e) => setTime(e.target.value)}
           className="border p-2 rounded w-full"
         />
       </div>
@@ -99,14 +101,14 @@ function TeacherDashboard() {
         <input
           type="text"
           value={section}
-          onChange={e => setSection(e.target.value)}
+          onChange={(e) => setSection(e.target.value)}
           className="border p-2 rounded w-full"
         />
       </div>
 
       <h2 className="text-xl font-semibold mb-2">Student List</h2>
       <ul>
-        {studentList.map(student => (
+        {studentList.map((student) => (
           <li key={student.id} className="mb-1">
             <label>
               <input

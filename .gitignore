@@ -62,7 +62,6 @@ local_settings.py
 db.sqlite3
 media/
 staticfiles/
-static/
 # If using Django's collectstatic
 # staticfiles/
 
@@ -142,7 +141,6 @@ coverage.xml
 *.py,cover
 
 # Django media files
-media/
 
 # Django static files
 staticfiles/
